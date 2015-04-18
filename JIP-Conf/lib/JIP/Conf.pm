@@ -3,6 +3,7 @@ package JIP::Conf;
 use 5.006;
 use strict;
 use warnings;
+use Hash::AsObject;
 use Carp qw(croak);
 use English qw(-no_match_vars);
 
