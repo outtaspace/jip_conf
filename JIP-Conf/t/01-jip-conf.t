@@ -23,32 +23,41 @@ subtest 'Require some module' => sub {
 };
 
 subtest 'Make sure init() invocations with no args fail' => sub {
-    plan tests => 2;
+    plan tests => 4;
 
     eval { JIP::Conf::init() };
-    like $EVAL_ERROR, qr{^Bad \s argument \s "path"}x;
+    like $EVAL_ERROR, qr{^Bad \s argument \s "path_to_file"}x;
 
     eval { JIP::Conf::init(q{}) };
-    like $EVAL_ERROR, qr{^Bad \s argument \s "path"}x;
+    like $EVAL_ERROR, qr{^Bad \s argument \s "path_to_file"}x;
+
+    eval { JIP::Conf::init(dist_file('JIP-Conf', 'well_formed.conf.pm')) };
+    like $EVAL_ERROR, qr{^Bad \s argument \s "path_to_variable"}x;
+
+    eval { JIP::Conf::init(dist_file('JIP-Conf', 'well_formed.conf.pm'), q{}) };
+    like $EVAL_ERROR, qr{^Bad \s argument \s "path_to_variable"}x;
 };
 
 subtest 'Fail if file not exists/well-formed' => sub {
     plan tests => 3;
 
-    eval { JIP::Conf::init('./unexisting_file') };
+    eval { JIP::Conf::init('./unexisting_file', 'Config::hash_ref') };
     like $EVAL_ERROR, qr{^No \s such \s file \s "./unexisting_file" \n}x;
 
-    eval { JIP::Conf::init(dist_file('JIP-Conf', 'syntax_error.conf.pm')) };
+    eval { JIP::Conf::init(dist_file('JIP-Conf', 'syntax_error.conf.pm'), 'Config::hash_ref') };
     like $EVAL_ERROR, qr{^Can't \s parse \s config}x;
 
-    eval { JIP::Conf::init(dist_file('JIP-Conf', 'not_a_hashref.conf.pm')) };
-    like $EVAL_ERROR, qr{^Invalid \s config}x;
+    eval { JIP::Conf::init(dist_file('JIP-Conf', 'well_formed.conf.pm'), 'Config::array_ref') };
+    like $EVAL_ERROR, qr/^Invalid \s config. \s Can't \s fetch \s \${Config::array_ref} \s from/x;
 };
 
 subtest 'HASH from file' => sub {
     plan tests => 4;
 
-    my $object = JIP::Conf::init(dist_file('JIP-Conf', 'well_formed.conf.pm'));
+    my $object = JIP::Conf::init(
+        dist_file('JIP-Conf', 'well_formed.conf.pm'),
+        'Config::hash_ref',
+    );
 
     is $object->parent->first_child, 'tratata';
     is $object->parent->second_child, 'тратата';

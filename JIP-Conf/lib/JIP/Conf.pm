@@ -10,21 +10,33 @@ use English qw(-no_match_vars);
 our $VERSION = '0.01';
 
 sub init {
-    my $path = shift;
+    my ($path_to_file, $path_to_variable) = @ARG;
 
-    croak qq{Bad argument "path"\n}   unless defined $path and length $path;
-    croak qq{No such file "$path"\n} unless -f $path;
+    # First arg
+    croak qq{Bad argument "path_to_file"\n}
+        unless defined $path_to_file and length $path_to_file;
+    croak qq{No such file "$path_to_file"\n}
+        unless -f $path_to_file;
 
-    my $data_from_file;
+    # Second arg
+    croak qq{Bad argument "path_to_variable"\n}
+        unless defined $path_to_variable and length $path_to_variable;
 
+    # Require file
     eval {
-        no warnings 'once';
-        require $path;
-        $data_from_file = $Config::params;
+        require $path_to_file;
     };
+    croak qq{Can't parse config "$path_to_file": $EVAL_ERROR\n}
+        if $EVAL_ERROR;
 
-    croak qq{Can't parse config "$path": $EVAL_ERROR\n} if $EVAL_ERROR;
-    croak qq{Invalid config "$path"\n}                  if ref $data_from_file ne 'HASH';
+    # Fetch hash_ref from package
+    my $data_from_file;
+    eval {
+        no strict 'refs';
+        $data_from_file = ${ $path_to_variable };
+    };
+    croak qq{Invalid config. Can't fetch \${$path_to_variable} from "$path_to_file"\n}
+        if $EVAL_ERROR or ref $data_from_file ne 'HASH';
 
     return Hash::AsObject->new($data_from_file);
 }
@@ -45,7 +57,10 @@ Version 0.01
 
     use JIP::Conf;
 
-    my $hash_ref = JIP::Conf::init('/path/to/conf.pm');
+    my $hash_ref = JIP::Conf::init(
+        '/path/to/conf.pm',
+        'Namespace::name_of_hashref',
+    );
 
     print qq{cmp_ok\n}
         if $hash_ref->{'parent'}->{'child'} eq $hash_ref->parent->child;
