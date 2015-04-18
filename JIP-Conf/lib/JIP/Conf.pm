@@ -2,11 +2,37 @@ package JIP::Conf;
 
 use 5.006;
 use strict;
-use warnings FATAL => 'all;
+use warnings;
+use Carp qw(croak);
+use English qw(-no_match_vars);
+
+our $VERSION = '0.01';
+
+sub init {
+    my $path = shift;
+
+    croak qq{Bad argument "path"\n}   unless defined $path and length $path;
+    croak qq{No such file "$path"\n} unless -f $path;
+
+    my $data_from_file;
+
+    eval {
+        no warnings 'once';
+        require $path;
+        $data_from_file = $Config::params;
+    };
+
+    croak qq{Can't parse config "$path": $EVAL_ERROR\n} if $EVAL_ERROR;
+    croak qq{Invalid config "$path"\n}                  if ref $data_from_file ne 'HASH';
+
+    return Hash::AsObject->new($data_from_file);
+}
+
+1;
 
 =head1 NAME
 
-JIP::Conf - The great new JIP::Conf!
+JIP::Conf - Perl-ish configuration plugin
 
 =head1 VERSION
 
@@ -14,86 +40,18 @@ Version 0.01
 
 =cut
 
-our $VERSION = '0.01';
-
-
 =head1 SYNOPSIS
-
-Quick summary of what the module does.
-
-Perhaps a little code snippet.
 
     use JIP::Conf;
 
-    my $foo = JIP::Conf->new();
-    ...
+    my $hash_ref = JIP::Conf::init('/path/to/conf.pm');
 
-=head1 EXPORT
-
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
-
-=head1 SUBROUTINES/METHODS
-
-=head2 function1
-
-=cut
-
-sub function1 {
-}
-
-=head2 function2
-
-=cut
-
-sub function2 {
-}
+    print qq{cmp_ok\n}
+        if $hash_ref->{'parent'}->{'child'} eq $hash_ref->parent->child;
 
 =head1 AUTHOR
 
 Vladimir Zhavoronkov, C<< <flyweight at yandex.ru> >>
-
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-jip-conf at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=JIP-Conf>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
-
-
-
-=head1 SUPPORT
-
-You can find documentation for this module with the perldoc command.
-
-    perldoc JIP::Conf
-
-
-You can also look for information at:
-
-=over 4
-
-=item * RT: CPAN's request tracker (report bugs here)
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=JIP-Conf>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/JIP-Conf>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/JIP-Conf>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/JIP-Conf/>
-
-=back
-
-
-=head1 ACKNOWLEDGEMENTS
-
 
 =head1 LICENSE AND COPYRIGHT
 
@@ -138,4 +96,3 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =cut
 
-1; # End of JIP::Conf
