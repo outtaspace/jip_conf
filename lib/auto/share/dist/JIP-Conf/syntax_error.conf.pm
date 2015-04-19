@@ -1,1 +1,1 @@
-Invalid confid.
+Invalid config.
