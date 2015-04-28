@@ -15,7 +15,7 @@ sub init {
     # First arg
     croak qq{Bad argument "path_to_file"\n}
         unless defined $path_to_file and length $path_to_file;
-    croak qq{No such file "$path_to_file"\n}
+    croak(sprintf qq{No such file "%s"\n}, $path_to_file)
         unless -f $path_to_file;
 
     # Second arg
@@ -23,11 +23,9 @@ sub init {
         unless defined $path_to_variable and length $path_to_variable;
 
     # Require file
-    eval {
-        require $path_to_file;
+    eval { require $path_to_file } or do {
+        croak(sprintf qq{Can't parse config "%s": %s\n}, $path_to_file, $EVAL_ERROR);
     };
-    croak qq{Can't parse config "$path_to_file": $EVAL_ERROR\n}
-        if $EVAL_ERROR;
 
     # Fetch hash_ref from package
     my $data_from_file;
@@ -35,13 +33,16 @@ sub init {
         no strict 'refs';
         $data_from_file = ${ $path_to_variable };
     };
-    croak qq{Invalid config. Can't fetch \${$path_to_variable} from "$path_to_file"\n}
-        if $EVAL_ERROR or ref $data_from_file ne 'HASH';
+    if ($EVAL_ERROR or ref $data_from_file ne 'HASH') {
+        croak(sprintf qq{Invalid config. Can't fetch \${%s} from "%s"\n}, $path_to_variable, $path_to_file);
+    }
 
     return Hash::AsObject->new($data_from_file);
 }
 
 1;
+
+__END__
 
 =head1 NAME
 
