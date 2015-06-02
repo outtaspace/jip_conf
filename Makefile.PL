@@ -15,16 +15,16 @@ WriteMakefile(
         'ExtUtils::MakeMaker' => 0,
     },
     BUILD_REQUIRES => {
-        'Test::More'     => 0,
-        'English'        => 0,
-        'File::ShareDir' => 0,
+        'File::Temp' => 0,
+        'Test::More' => 0,
+        'English'    => 0,
     },
     PREREQ_PM => {
         'Carp'           => 0,
         'English'        => 0,
         'Hash::AsObject' => 0,
     },
-    dist  => {COMPRESS => 'gzip -9f', SUFFIX => 'gz',},
+    dist  => {COMPRESS => 'gzip -9f', SUFFIX => 'gz'},
     clean => {FILES => 'JIP-Conf-*'},
 );
 
