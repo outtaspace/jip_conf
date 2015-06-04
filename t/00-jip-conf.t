@@ -50,7 +50,7 @@ subtest 'Fail if file not exists/well-formed' => sub {
     plan tests => 3;
 
     eval { JIP::Conf::init('./unexisting_file', 'Config::hash_ref') } or do {
-        like $EVAL_ERROR, qr{^No \s such \s file \s "./unexisting_file" \n}x;
+        like $EVAL_ERROR, qr{^No \s such \s file \s "\.\/unexisting_file"}x;
     };
 
     eval { JIP::Conf::init($tmp_invalid->filename, 'Config::hash_ref') } or do {
@@ -58,9 +58,9 @@ subtest 'Fail if file not exists/well-formed' => sub {
     };
 
     eval { JIP::Conf::init($tmp_well_formed->filename, 'Config::array_ref') } or do {
-        like $EVAL_ERROR, qr/
-            ^Invalid \s config. \s Can't \s fetch \s \${Config::array_ref} \s from
-        /x;
+        like $EVAL_ERROR, qr{
+            ^Invalid \s config. \s Can't \s fetch \s \$\{Config::array_ref\} \s from
+        }x;
     };
 };
 
