@@ -24,7 +24,7 @@ sub init {
 
     # Require file
     eval { require $path_to_file } or do {
-        croak(sprintf qq{Can't parse config "%s": %s}, $path_to_file, $EVAL_ERROR);
+        croak(sprintf q{Can't parse config "%s": %s}, $path_to_file, $EVAL_ERROR);
     };
 
     # Fetch hash_ref from package
