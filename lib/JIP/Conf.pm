@@ -15,7 +15,7 @@ sub init {
     # First arg
     croak q{Bad argument "path_to_file"}
         unless defined $path_to_file and length $path_to_file;
-    croak(sprintf q{No such file "%s"\n}, $path_to_file)
+    croak(sprintf q{No such file "%s"}, $path_to_file)
         unless -f $path_to_file;
 
     # Second arg
