@@ -18,6 +18,7 @@ WriteMakefile(
         'File::Temp' => 0,
         'Test::More' => 0,
         'English'    => 0,
+        'Carp'       => 0,
     },
     PREREQ_PM => {
         'Carp'           => 0,
