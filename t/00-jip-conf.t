@@ -15,7 +15,7 @@ my $tmp_well_formed = build_tmp_file_for(well_formed_config());
 subtest 'Require some module' => sub {
     plan tests => 2;
 
-    use_ok 'JIP::Conf', '0.02';
+    use_ok 'JIP::Conf', '0.021';
     require_ok 'JIP::Conf';
 
     diag(

@@ -7,7 +7,7 @@ use Hash::AsObject;
 use Carp qw(croak);
 use English qw(-no_match_vars);
 
-our $VERSION = '0.02';
+our $VERSION = '0.021';
 
 sub init {
     my ($path_to_file, $path_to_variable) = @ARG;
@@ -54,7 +54,7 @@ JIP::Conf - Perl-ish configuration plugin
 
 =head1 VERSION
 
-This document describes C<JIP::Conf> version C<0.02>.
+This document describes C<JIP::Conf> version C<0.021>.
 
 =cut
 
